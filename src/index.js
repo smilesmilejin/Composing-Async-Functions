@@ -10,15 +10,14 @@ const getRandomValue = (values) => {
 // https://dog.ceo/dog-api/documentation/
 // returns a Promise to an array of breed names
 
-const getBreeds = () => {
-  return axios
-    .get('https://dog.ceo/api/breeds/list/all')
-    .then((response) => {
-      return Object.keys(response.data.message);
-    })
-    .catch(() => {
-      console.log('error!');
-    });
+const getBreeds = async () => {
+  try {
+    const response = await axios.get('https://dog.ceo/api/breeds/list/all');
+    return Object.keys(response.data.message);
+  } catch {
+    console.log('error!');
+    return [];
+  }
 };
 
 // Helper method to retrieve a random image for a
@@ -27,34 +26,28 @@ const getBreeds = () => {
 // RANDOM IMAGE FROM A BREED COLLECTION
 // returns a Promise to a url (string)
 
-const getRandomImageForBreed = (breed) => {
-  return axios
-    .get(`https://dog.ceo/api/breed/${breed}/images/random`)
-    .then((response) => {
-      return response.data.message;
-    })
-    .catch(() => {
-      console.log('error!');
-    });
+const getRandomImageForBreed = async (breed) => {
+  try {
+    const response = await axios.get(`https://dog.ceo/api/breed/${breed}/images/random`);
+    return response.data.message;
+  } catch {
+    console.log('error!');
+    return null;
+  }
 };
 
 // use our other helpers to make a function that returns
 // a random image from a random breed
 // returns a Promise to a url (string)
 
-const getRandomDogImage = () => {
-  return getBreeds()
-    .then(breeds => {
-      // get one breed from the list
-      const oneBreed = getRandomValue(breeds);
-      // return the promise we get from getRandomImageForBreed
-      return getRandomImageForBreed(oneBreed);
-    });
+const getRandomDogImage = async () => {
+  const breeds = await getBreeds();
+  const oneBreed = await getRandomValue(breeds);
+  const randomImage = await getRandomImageForBreed(oneBreed);
+
+  console.log(randomImage);
 };
 
 // This is the call we would like to make work
 // This function should return a Promise to a url (string)
-getRandomDogImage()
-  .then(url => {
-    console.log(url);
-  });
+getRandomDogImage();
